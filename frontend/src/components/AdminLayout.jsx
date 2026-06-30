@@ -7,6 +7,8 @@ import {
   FiAward,
   FiSettings,
   FiLogOut,
+  FiImage,
+  FiCode,
 } from "react-icons/fi";
 
 const AdminLayout = () => {
@@ -17,7 +19,9 @@ const AdminLayout = () => {
     { name: "Dashboard", path: "/admin", icon: <FiHome /> },
     { name: "About & Hero", path: "/admin/about", icon: <FiUser /> },
     { name: "Projects", path: "/admin/projects", icon: <FiBriefcase /> },
+    { name: "Skills", path: "/admin/skills", icon: <FiCode /> },
     { name: "Experience", path: "/admin/experience", icon: <FiAward /> },
+    { name: "Graphic Designs", path: "/admin/designs", icon: <FiImage /> },
     { name: "Settings", path: "/admin/settings", icon: <FiSettings /> },
   ];
 

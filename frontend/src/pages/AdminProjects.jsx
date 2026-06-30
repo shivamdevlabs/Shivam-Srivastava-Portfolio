@@ -125,9 +125,7 @@ const AdminProjects = () => {
     
     try {
       setStatus('Uploading image...');
-      const res = await api.post('/portfolio/upload/image', uploadData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const res = await api.post('/portfolio/upload/image', uploadData);
       setFormData(prev => ({ ...prev, image_url: res.data.url }));
       setStatus('Image uploaded successfully!');
       setTimeout(() => setStatus(''), 3000);

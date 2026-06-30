@@ -9,7 +9,7 @@ import os
 import uuid
 import smtplib
 from email.message import EmailMessage
-from models import Project, Certificate, Experience, Education, AboutInfo, ContactMessage
+from models import Project, Certificate, Experience, Education, AboutInfo, ContactMessage, GraphicDesign
 
 router = APIRouter(prefix="/api/portfolio", tags=["portfolio"])
 
@@ -24,6 +24,7 @@ def serialize_doc(doc):
 UPLOAD_DIR = "uploads"
 os.makedirs(f"{UPLOAD_DIR}/images", exist_ok=True)
 os.makedirs(f"{UPLOAD_DIR}/certificates", exist_ok=True)
+os.makedirs(f"{UPLOAD_DIR}/designs", exist_ok=True)
 
 @router.post("/upload/image", dependencies=[Depends(get_current_admin)])
 async def upload_image(file: UploadFile = File(...)):
@@ -41,6 +42,16 @@ async def upload_pdf(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
     return {"url": f"/static/certificates/{filename}"}
 
+@router.post("/upload/design", dependencies=[Depends(get_current_admin)])
+async def upload_design(file: UploadFile = File(...)):
+    filename = f"{uuid.uuid4()}_{file.filename}"
+    file_location = f"{UPLOAD_DIR}/designs/{filename}"
+    with open(file_location, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    content_type = file.content_type or ""
+    media_type = "video" if content_type.startswith("video/") else "image"
+    return {"url": f"/static/designs/{filename}", "media_type": media_type}
 # Projects Endpoints
 @router.get("/projects")
 async def get_projects():
@@ -69,6 +80,10 @@ async def update_project(id: str, project: Project):
 async def delete_project(id: str):
     db = get_db()
     result = await db["projects"].delete_one({"_id": ObjectId(id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return {"msg": "Deleted"}
+
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Project not found")
     return {"msg": "Deleted"}
@@ -158,3 +173,75 @@ async def send_contact_email(msg: ContactMessage):
     except Exception as e:
         print(f"SMTP Error: {e}")
         raise HTTPException(status_code=500, detail="Failed to send email. Please try again later.")
+
+# Graphic Design Endpoints
+
+@router.get("/graphic-designs")
+async def get_graphic_designs():
+    db = get_db()
+    designs = await db["graphic_designs"].find().sort("created_at", -1).to_list(100)
+    return [serialize_doc(d) for d in designs]
+
+@router.post("/graphic-designs", dependencies=[Depends(get_current_admin)])
+async def create_graphic_design(design: GraphicDesign):
+    db = get_db()
+    new_design = await db["graphic_designs"].insert_one(design.dict())
+    created_design = await db["graphic_designs"].find_one({"_id": new_design.inserted_id})
+    return serialize_doc(created_design)
+
+@router.put("/graphic-designs/{design_id}", dependencies=[Depends(get_current_admin)])
+async def update_graphic_design(design_id: str, design: GraphicDesign):
+    db = get_db()
+    updated_design = await db["graphic_designs"].find_one_and_update(
+        {"_id": ObjectId(design_id)},
+        {"$set": design.dict()},
+        return_document=True
+    )
+    if updated_design:
+        return serialize_doc(updated_design)
+    raise HTTPException(status_code=404, detail="Graphic design not found")
+
+@router.delete("/graphic-designs/{design_id}", dependencies=[Depends(get_current_admin)])
+async def delete_graphic_design(design_id: str):
+    db = get_db()
+    delete_result = await db["graphic_designs"].delete_one({"_id": ObjectId(design_id)})
+    if delete_result.deleted_count == 1:
+        return {"msg": "Graphic design deleted successfully"}
+    raise HTTPException(status_code=404, detail="Graphic design not found")
+
+# Skills Endpoints
+
+from models import Skill
+
+@router.get("/skills")
+async def get_skills():
+    db = get_db()
+    skills = await db["skills"].find().to_list(100)
+    return [serialize_doc(s) for s in skills]
+
+@router.post("/skills", dependencies=[Depends(get_current_admin)])
+async def create_skill(skill: Skill):
+    db = get_db()
+    new_skill = await db["skills"].insert_one(skill.dict())
+    created_skill = await db["skills"].find_one({"_id": new_skill.inserted_id})
+    return serialize_doc(created_skill)
+
+@router.put("/skills/{skill_id}", dependencies=[Depends(get_current_admin)])
+async def update_skill(skill_id: str, skill: Skill):
+    db = get_db()
+    updated_skill = await db["skills"].find_one_and_update(
+        {"_id": ObjectId(skill_id)},
+        {"$set": skill.dict()},
+        return_document=True
+    )
+    if updated_skill:
+        return serialize_doc(updated_skill)
+    raise HTTPException(status_code=404, detail="Skill not found")
+
+@router.delete("/skills/{skill_id}", dependencies=[Depends(get_current_admin)])
+async def delete_skill(skill_id: str):
+    db = get_db()
+    delete_result = await db["skills"].delete_one({"_id": ObjectId(skill_id)})
+    if delete_result.deleted_count == 1:
+        return {"msg": "Skill deleted successfully"}
+    raise HTTPException(status_code=404, detail="Skill not found")

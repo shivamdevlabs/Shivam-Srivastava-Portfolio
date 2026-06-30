@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import About from '../components/About';
 import Projects from '../components/Projects';
+import FeaturedDesigns from '../components/FeaturedDesigns';
 import ExperienceTimeline from '../components/ExperienceTimeline';
 import Certificates from '../components/Certificates';
 import Contact from '../components/Contact';
@@ -14,29 +15,35 @@ const Portfolio = () => {
   const [data, setData] = useState({
     about: null,
     projects: [],
+    designs: [],
     experience: [],
     education: [],
     certificates: [],
+    skills: [],
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [aboutRes, projRes, expRes, eduRes, certRes] = await Promise.all([
+        const [aboutRes, projRes, designsRes, expRes, eduRes, certRes, skillsRes] = await Promise.all([
           api.get('/portfolio/about'),
           api.get('/portfolio/projects'),
+          api.get('/portfolio/graphic-designs'),
           api.get('/portfolio/experience'),
           api.get('/portfolio/education'), // We can add this route or combine with experience
-          api.get('/portfolio/certificates')
+          api.get('/portfolio/certificates'),
+          api.get('/portfolio/skills')
         ]);
         
         setData({
           about: aboutRes.data,
           projects: projRes.data,
+          designs: designsRes.data,
           experience: expRes.data,
           education: eduRes.data || [],
-          certificates: certRes.data
+          certificates: certRes.data,
+          skills: skillsRes.data || []
         });
       } catch (err) {
         console.error("Failed to load portfolio data", err);
@@ -56,7 +63,7 @@ const Portfolio = () => {
     );
   }
 
-  const { about, projects, experience, education, certificates } = data;
+  const { about, projects, designs, experience, education, certificates, skills } = data;
 
   return (
     <div className="bg-gray-50 dark:bg-slate-900 min-h-screen transition-colors duration-300 text-gray-800 dark:text-gray-100 font-sans">
@@ -69,9 +76,10 @@ const Portfolio = () => {
       
       <main>
         <Hero about={about} />
-        <About about={about} />
+        <About about={about} skills={skills} />
         <ExperienceTimeline experience={experience} education={education} />
         <Projects projects={projects} />
+        <FeaturedDesigns designs={designs} />
         <Certificates certificates={certificates} />
         <Contact about={about} />
       </main>

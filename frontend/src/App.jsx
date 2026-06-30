@@ -6,7 +6,9 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminAbout from './pages/AdminAbout';
 import AdminProjects from './pages/AdminProjects';
+import AdminGraphicDesigns from './pages/AdminGraphicDesigns';
 import AdminExperience from './pages/AdminExperience';
+import AdminSkills from './pages/AdminSkills';
 import AdminLayout from './components/AdminLayout';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -40,7 +42,9 @@ function App() {
                 <Route index element={<AdminDashboard />} />
                 <Route path="about" element={<AdminAbout />} />
                 <Route path="projects" element={<AdminProjects />} />
+                <Route path="designs" element={<AdminGraphicDesigns />} />
                 <Route path="experience" element={<AdminExperience />} />
+                <Route path="skills" element={<AdminSkills />} />
                 <Route path="settings" element={<div className="p-4">Settings (Coming Soon)</div>} />
               </Route>
             </Route>

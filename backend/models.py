@@ -55,3 +55,14 @@ class ContactMessage(BaseModel):
     name: str
     email: EmailStr
     message: str
+
+class GraphicDesign(BaseModel):
+    title: str
+    description: str
+    media_url: str
+    media_type: str # 'image' or 'video'
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class Skill(BaseModel):
+    name: str
+    category: str = "technical" # 'technical', 'designing', or 'other'

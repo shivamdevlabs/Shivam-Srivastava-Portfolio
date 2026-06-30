@@ -16,6 +16,7 @@ app.add_middleware(
 app.mount("/static/images", StaticFiles(directory="uploads/images"), name="images")
 app.mount("/static/certificates", StaticFiles(directory="uploads/certificates"), name="certificates")
 app.mount("/static/resume", StaticFiles(directory="uploads/resume"), name="resume")
+app.mount("/static/designs", StaticFiles(directory="uploads/designs"), name="designs")
 
 app.include_router(auth_router.router)
 app.include_router(portfolio_router.router)

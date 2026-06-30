@@ -17,11 +17,12 @@ const Navbar = ({ about }) => {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "About", href: "#about" },
-    { name: "Experience", href: "#experience" },
-    { name: "Projects", href: "#projects" },
-    { name: "Certificates", href: "#certificates" },
-    { name: "Contact", href: "#contact" },
+    { name: "About", href: "/#about" },
+    { name: "Experience", href: "/#experience" },
+    { name: "Projects", href: "/#projects" },
+    { name: "My Designs", href: "/#designs" },
+    { name: "Certificates", href: "/#certificates" },
+    { name: "Contact", href: "/#contact" },
   ];
 
   return (

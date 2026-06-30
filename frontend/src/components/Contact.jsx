@@ -59,15 +59,7 @@ const Contact = ({ about }) => {
                   <a href={`mailto:${about.email}`} className="text-gray-600 dark:text-gray-400 hover:text-blue-500 transition-colors">{about.email}</a>
                 </div>
               </div>
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
-                  <FiPhone size={20} />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Phone</h4>
-                  <p className="text-gray-600 dark:text-gray-400">{about.phone}</p>
-                </div>
-              </div>
+
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
                   <FiMapPin size={20} />
