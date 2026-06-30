@@ -38,7 +38,7 @@ const AdminGraphicDesigns = () => {
       media_type: design.media_type,
     });
     setIsFormOpen(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleAddNewClick = () => {
@@ -93,7 +93,7 @@ const AdminGraphicDesigns = () => {
     e.preventDefault();
     try {
       setStatus(editingId ? "Updating design..." : "Adding design...");
-      
+
       if (editingId) {
         await api.put(`/portfolio/graphic-designs/${editingId}`, formData);
         setStatus("Design updated successfully!");
@@ -145,11 +145,11 @@ const AdminGraphicDesigns = () => {
         >
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">
-              {editingId ? 'Edit Design' : 'Add New Design'}
+              {editingId ? "Edit Design" : "Add New Design"}
             </h2>
             {editingId && (
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleAddNewClick}
                 className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
               >
@@ -174,21 +174,29 @@ const AdminGraphicDesigns = () => {
                 graphic designs or reels.
               </p>
 
-              {formData.media_url && formData.media_type === "image" && (
-              {formData.media_url && formData.media_type === "video" ? (
-                <video
-                  src={formData.media_url?.startsWith('http') ? formData.media_url : `http://localhost:8000${formData.media_url}`}
-                  className="w-full h-auto max-h-48 object-cover rounded shadow"
-                  controls
-                  muted
-                />
-              ) : formData.media_url && (
-                <img
-                  src={formData.media_url?.startsWith('http') ? formData.media_url : `http://localhost:8000${formData.media_url}`}
-                  alt="Preview"
-                  className="w-full h-auto max-h-48 object-cover rounded shadow"
-                />
-              )}
+              {formData.media_url &&
+                (formData.media_type === "video" ? (
+                  <video
+                    src={
+                      formData.media_url?.startsWith("http")
+                        ? formData.media_url
+                        : `http://localhost:8000${formData.media_url}`
+                    }
+                    className="w-full h-auto max-h-48 object-cover rounded shadow"
+                    controls
+                    muted
+                  />
+                ) : (
+                  <img
+                    src={
+                      formData.media_url?.startsWith("http")
+                        ? formData.media_url
+                        : `http://localhost:8000${formData.media_url}`
+                    }
+                    alt="Preview"
+                    className="w-full h-auto max-h-48 object-cover rounded shadow"
+                  />
+                ))}
             </div>
           </div>
 
@@ -233,14 +241,22 @@ const AdminGraphicDesigns = () => {
             <div className="w-full h-48 mb-4 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
               {design.media_type === "video" ? (
                 <video
-                  src={design.media_url?.startsWith('http') ? design.media_url : `http://localhost:8000${design.media_url}`}
+                  src={
+                    design.media_url?.startsWith("http")
+                      ? design.media_url
+                      : `http://localhost:8000${design.media_url}`
+                  }
                   className="w-full h-full object-cover"
                   controls
                   muted
                 />
               ) : (
                 <img
-                  src={design.media_url?.startsWith('http') ? design.media_url : `http://localhost:8000${design.media_url}`}
+                  src={
+                    design.media_url?.startsWith("http")
+                      ? design.media_url
+                      : `http://localhost:8000${design.media_url}`
+                  }
                   alt={design.title}
                   className="w-full h-full object-cover"
                 />

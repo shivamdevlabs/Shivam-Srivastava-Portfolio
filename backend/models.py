@@ -2,16 +2,20 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import datetime
 
+
 class User(BaseModel):
     email: EmailStr
     hashed_password: str
+
 
 class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 class TokenData(BaseModel):
     email: Optional[str] = None
+
 
 class Project(BaseModel):
     title: str
@@ -22,11 +26,13 @@ class Project(BaseModel):
     image_url: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+
 class Certificate(BaseModel):
     title: str
     pdf_url: str
     issued_by: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
 
 class Experience(BaseModel):
     role: str
@@ -36,10 +42,12 @@ class Experience(BaseModel):
     end_date: str
     description: List[str]
 
+
 class Education(BaseModel):
     degree: str
     institution: str
     duration: str
+
 
 class AboutInfo(BaseModel):
     name: str
@@ -51,18 +59,21 @@ class AboutInfo(BaseModel):
     social_links: dict
     photo_url: Optional[str] = None
 
+
 class ContactMessage(BaseModel):
     name: str
     email: EmailStr
     message: str
 
+
 class GraphicDesign(BaseModel):
     title: str
     description: str
     media_url: str
-    media_type: str # 'image' or 'video'
+    media_type: str  # 'image' or 'video'
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
 
 class Skill(BaseModel):
     name: str
-    category: str = "technical" # 'technical', 'designing', or 'other'
+    category: str = "technical"  # 'technical', 'designing', or 'other'
