@@ -175,20 +175,18 @@ const AdminGraphicDesigns = () => {
               </p>
 
               {formData.media_url && formData.media_type === "image" && (
-                <img
-                  src={`http://localhost:8000${formData.media_url}`}
-                  alt="Preview"
-                  className="h-32 w-auto object-cover rounded shadow"
-                />
-              )}
-              {formData.media_url && formData.media_type === "video" && (
+              {formData.media_url && formData.media_type === "video" ? (
                 <video
-                  src={`http://localhost:8000${formData.media_url}`}
-                  className="h-32 w-auto rounded shadow"
+                  src={formData.media_url?.startsWith('http') ? formData.media_url : `http://localhost:8000${formData.media_url}`}
+                  className="w-full h-auto max-h-48 object-cover rounded shadow"
                   controls
-                  autoPlay
-                  loop
                   muted
+                />
+              ) : formData.media_url && (
+                <img
+                  src={formData.media_url?.startsWith('http') ? formData.media_url : `http://localhost:8000${formData.media_url}`}
+                  alt="Preview"
+                  className="w-full h-auto max-h-48 object-cover rounded shadow"
                 />
               )}
             </div>
@@ -235,14 +233,14 @@ const AdminGraphicDesigns = () => {
             <div className="w-full h-48 mb-4 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
               {design.media_type === "video" ? (
                 <video
-                  src={`http://localhost:8000${design.media_url}`}
+                  src={design.media_url?.startsWith('http') ? design.media_url : `http://localhost:8000${design.media_url}`}
                   className="w-full h-full object-cover"
                   controls
                   muted
                 />
               ) : (
                 <img
-                  src={`http://localhost:8000${design.media_url}`}
+                  src={design.media_url?.startsWith('http') ? design.media_url : `http://localhost:8000${design.media_url}`}
                   alt={design.title}
                   className="w-full h-full object-cover"
                 />

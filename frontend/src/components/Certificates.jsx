@@ -35,7 +35,7 @@ const Certificates = ({ certificates }) => {
               <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 flex-1">{cert.issued_by}</p>
               
               <a 
-                href={`http://localhost:8000${cert.pdf_url}`} 
+                href={cert.pdf_url?.startsWith('http') ? cert.pdf_url : `http://localhost:8000${cert.pdf_url}`} 
                 target="_blank" 
                 rel="noreferrer"
                 className="inline-flex items-center space-x-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"

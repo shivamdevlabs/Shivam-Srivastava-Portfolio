@@ -51,7 +51,7 @@ const Hero = ({ about }) => {
             <a href="#projects" className="px-8 py-3 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow-lg shadow-blue-500/30">
               View My Work
             </a>
-            <a href="http://localhost:8000/static/resume/resume.pdf" target="_blank" className="px-8 py-3 rounded-full border-2 border-blue-600 text-blue-600 dark:text-blue-400 font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">
+            <a href="/resume.pdf" target="_blank" className="px-8 py-3 rounded-full border-2 border-blue-600 text-blue-600 dark:text-blue-400 font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">
               Download Resume
             </a>
           </div>
@@ -67,7 +67,7 @@ const Hero = ({ about }) => {
             <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-full blur-2xl opacity-40 animate-pulse"></div>
             {about.photo_url ? (
               <img 
-                src={`http://localhost:8000${about.photo_url}`} 
+                src={about.photo_url?.startsWith('http') ? about.photo_url : `http://localhost:8000${about.photo_url}`}
                 alt={about.name} 
                 className="relative z-10 w-full h-full object-cover rounded-full border-4 border-white dark:border-slate-800 shadow-2xl"
               />

@@ -232,7 +232,7 @@ const AdminProjects = () => {
             <label className="block text-sm font-medium mb-1">Project Preview Image</label>
             <div className="flex items-center gap-4">
               {formData.image_url && (
-                <img src={`http://localhost:8000${formData.image_url}`} alt="Preview" className="h-16 w-16 object-cover rounded shadow" />
+                <img src={formData.image_url?.startsWith('http') ? formData.image_url : `http://localhost:8000${formData.image_url}`} alt="Preview" className="h-16 w-16 object-cover rounded shadow" />
               )}
               <input type="file" accept="image/*" onChange={handleImageUpload} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300" />
             </div>
@@ -271,7 +271,7 @@ const AdminProjects = () => {
           <div key={project.id} className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm flex justify-between items-start">
             <div className="flex gap-4 items-start">
               {project.image_url ? (
-                <img src={`http://localhost:8000${project.image_url}`} alt={project.title} className="w-20 h-20 object-cover rounded-lg shadow-sm hidden sm:block" />
+                <img src={project.image_url?.startsWith('http') ? project.image_url : `http://localhost:8000${project.image_url}`} alt={project.title} className="w-20 h-20 object-cover rounded-lg shadow-sm hidden sm:block" />
               ) : (
                 <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center hidden sm:flex text-gray-400 text-xs text-center p-2">
                   No Image

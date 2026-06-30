@@ -118,7 +118,7 @@ const FeaturedDesigns = ({ designs }) => {
                   <div className="relative w-full bg-gray-200 dark:bg-gray-800">
                     {design.media_type === "video" ? (
                       <video
-                        src={`http://localhost:8000${design.media_url}`}
+                        src={design.media_url?.startsWith('http') ? design.media_url : `http://localhost:8000${design.media_url}`}
                         className="w-full h-auto"
                         controls
                         controlsList="nodownload"
@@ -128,7 +128,7 @@ const FeaturedDesigns = ({ designs }) => {
                       />
                     ) : (
                       <img
-                        src={`http://localhost:8000${design.media_url}`}
+                        src={design.media_url?.startsWith('http') ? design.media_url : `http://localhost:8000${design.media_url}`}
                         alt={design.title}
                         className="w-full h-auto group-hover:scale-105 transition-transform duration-500"
                         onContextMenu={(e) => e.preventDefault()}
@@ -190,7 +190,7 @@ const FeaturedDesigns = ({ designs }) => {
             >
               {filteredDesigns[selectedIndex].media_type === "video" ? (
                 <video
-                  src={`http://localhost:8000${filteredDesigns[selectedIndex].media_url}`}
+                  src={filteredDesigns[selectedIndex].media_url?.startsWith('http') ? filteredDesigns[selectedIndex].media_url : `http://localhost:8000${filteredDesigns[selectedIndex].media_url}`}
                   className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
                   controls
                   controlsList="nodownload"
@@ -199,7 +199,7 @@ const FeaturedDesigns = ({ designs }) => {
                 />
               ) : (
                 <img
-                  src={`http://localhost:8000${filteredDesigns[selectedIndex].media_url}`}
+                  src={filteredDesigns[selectedIndex].media_url?.startsWith('http') ? filteredDesigns[selectedIndex].media_url : `http://localhost:8000${filteredDesigns[selectedIndex].media_url}`}
                   alt={filteredDesigns[selectedIndex].title}
                   className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
                   onContextMenu={(e) => e.preventDefault()}

@@ -10,6 +10,9 @@ import uuid
 import smtplib
 from email.message import EmailMessage
 from models import Project, Certificate, Experience, Education, AboutInfo, ContactMessage, GraphicDesign
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 router = APIRouter(prefix="/api/portfolio", tags=["portfolio"])
 
@@ -28,30 +31,31 @@ os.makedirs(f"{UPLOAD_DIR}/designs", exist_ok=True)
 
 @router.post("/upload/image", dependencies=[Depends(get_current_admin)])
 async def upload_image(file: UploadFile = File(...)):
-    filename = f"{uuid.uuid4()}_{file.filename}"
-    file_location = f"{UPLOAD_DIR}/images/{filename}"
-    with open(file_location, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    return {"url": f"/static/images/{filename}"}
+    try:
+        result = cloudinary.uploader.upload(file.file, folder="portfolio/images")
+        return {"url": result.get("secure_url")}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/upload/pdf", dependencies=[Depends(get_current_admin)])
 async def upload_pdf(file: UploadFile = File(...)):
-    filename = f"{uuid.uuid4()}_{file.filename}"
-    file_location = f"{UPLOAD_DIR}/certificates/{filename}"
-    with open(file_location, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    return {"url": f"/static/certificates/{filename}"}
+    try:
+        result = cloudinary.uploader.upload(file.file, folder="portfolio/certificates")
+        return {"url": result.get("secure_url")}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/upload/design", dependencies=[Depends(get_current_admin)])
 async def upload_design(file: UploadFile = File(...)):
-    filename = f"{uuid.uuid4()}_{file.filename}"
-    file_location = f"{UPLOAD_DIR}/designs/{filename}"
-    with open(file_location, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    content_type = file.content_type or ""
-    media_type = "video" if content_type.startswith("video/") else "image"
-    return {"url": f"/static/designs/{filename}", "media_type": media_type}
+    try:
+        content_type = file.content_type or ""
+        media_type = "video" if content_type.startswith("video/") else "image"
+        
+        resource_type = "video" if media_type == "video" else "image"
+        result = cloudinary.uploader.upload(file.file, folder="portfolio/designs", resource_type=resource_type)
+        return {"url": result.get("secure_url"), "media_type": media_type}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 # Projects Endpoints
 @router.get("/projects")
 async def get_projects():

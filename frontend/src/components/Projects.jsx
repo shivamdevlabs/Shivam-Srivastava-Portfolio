@@ -30,7 +30,7 @@ const Projects = ({ projects }) => {
             >
               <div className="h-48 bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
                 <img 
-                  src={project.image_url ? `http://localhost:8000${project.image_url}` : "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80"} 
+                  src={project.image_url ? (project.image_url.startsWith('http') ? project.image_url : `http://localhost:8000${project.image_url}`) : "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80"} 
                   alt={project.title} 
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                 />

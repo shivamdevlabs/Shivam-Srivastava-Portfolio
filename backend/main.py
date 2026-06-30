@@ -13,10 +13,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static/images", StaticFiles(directory="uploads/images"), name="images")
-app.mount("/static/certificates", StaticFiles(directory="uploads/certificates"), name="certificates")
-app.mount("/static/resume", StaticFiles(directory="uploads/resume"), name="resume")
-app.mount("/static/designs", StaticFiles(directory="uploads/designs"), name="designs")
+import os
+
+if os.path.exists("uploads/images"):
+    app.mount("/static/images", StaticFiles(directory="uploads/images"), name="images")
+if os.path.exists("uploads/certificates"):
+    app.mount("/static/certificates", StaticFiles(directory="uploads/certificates"), name="certificates")
+if os.path.exists("uploads/resume"):
+    app.mount("/static/resume", StaticFiles(directory="uploads/resume"), name="resume")
+if os.path.exists("uploads/designs"):
+    app.mount("/static/designs", StaticFiles(directory="uploads/designs"), name="designs")
 
 app.include_router(auth_router.router)
 app.include_router(portfolio_router.router)
