@@ -51,7 +51,7 @@ const Hero = ({ about }) => {
             <a href="#projects" className="px-8 py-3 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow-lg shadow-blue-500/30">
               View My Work
             </a>
-            <a href="/resume.pdf" target="_blank" className="px-8 py-3 rounded-full border-2 border-blue-600 text-blue-600 dark:text-blue-400 font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">
+            <a href={about.resume_url || "/resume.pdf"} target="_blank" rel="noreferrer" className="px-8 py-3 rounded-full border-2 border-blue-600 text-blue-600 dark:text-blue-400 font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">
               Download Resume
             </a>
           </div>

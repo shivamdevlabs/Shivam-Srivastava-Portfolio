@@ -8,5 +8,6 @@ MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
 client = AsyncIOMotorClient(MONGO_URL)
 database = client.portfolio_db
 
+
 def get_db():
     return database

@@ -58,6 +58,7 @@ class AboutInfo(BaseModel):
     address: str
     social_links: dict
     photo_url: Optional[str] = None
+    resume_url: Optional[str] = None
 
 
 class ContactMessage(BaseModel):
