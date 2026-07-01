@@ -4,7 +4,7 @@ pymongo
 motor
 python-dotenv
 python-jose[cryptography]
-passlib[bcrypt]
+bcrypt
 python-multipart
 pytest
 cloudinary

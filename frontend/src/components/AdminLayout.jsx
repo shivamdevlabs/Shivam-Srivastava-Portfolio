@@ -33,7 +33,7 @@ const AdminLayout = () => {
         <div className="p-6">
           <h2 className="text-2xl font-bold gradient-text">Admin Panel</h2>
         </div>
-        <nav className="flex-1 px-4 space-y-2">
+        <nav className="flex-1 px-4 space-y-2 overflow-y-auto py-2">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
