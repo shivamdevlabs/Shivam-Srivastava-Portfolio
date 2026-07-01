@@ -25,9 +25,12 @@ def serialize_doc(doc):
 
 # Helper for uploads
 UPLOAD_DIR = "uploads"
-os.makedirs(f"{UPLOAD_DIR}/images", exist_ok=True)
-os.makedirs(f"{UPLOAD_DIR}/certificates", exist_ok=True)
-os.makedirs(f"{UPLOAD_DIR}/designs", exist_ok=True)
+try:
+    os.makedirs(f"{UPLOAD_DIR}/images", exist_ok=True)
+    os.makedirs(f"{UPLOAD_DIR}/certificates", exist_ok=True)
+    os.makedirs(f"{UPLOAD_DIR}/designs", exist_ok=True)
+except OSError:
+    pass # Vercel serverless environment is read-only, uploads should use cloud storage
 
 @router.post("/upload/image", dependencies=[Depends(get_current_admin)])
 async def upload_image(file: UploadFile = File(...)):
