@@ -21,6 +21,8 @@ from models import (
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+import cloudinary.utils
+import time
 
 router = APIRouter(prefix="/api/portfolio", tags=["portfolio"])
 
@@ -89,6 +91,24 @@ async def upload_design(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+@router.get("/upload/signature", dependencies=[Depends(get_current_admin)])
+async def get_upload_signature(folder: str = "portfolio/designs"):
+    try:
+        timestamp = int(time.time())
+        signature = cloudinary.utils.api_sign_request(
+            {"folder": folder, "timestamp": timestamp},
+            cloudinary.config().api_secret
+        )
+        return {
+            "signature": signature,
+            "timestamp": timestamp,
+            "api_key": cloudinary.config().api_key,
+            "cloud_name": cloudinary.config().cloud_name
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Projects Endpoints
 @router.get("/projects")

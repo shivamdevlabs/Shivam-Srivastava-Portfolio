@@ -64,20 +64,35 @@ const AdminGraphicDesigns = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const uploadData = new FormData();
-    uploadData.append("file", file);
-
     try {
-      setStatus("Uploading media...");
-      const res = await api.post("/portfolio/upload/design", uploadData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      setStatus("Getting upload permission...");
+      const sigRes = await api.get("/portfolio/upload/signature?folder=portfolio/designs");
+      const { signature, timestamp, api_key, cloud_name } = sigRes.data;
+
+      setStatus("Uploading media to cloud...");
+      const uploadData = new FormData();
+      uploadData.append("file", file);
+      uploadData.append("api_key", api_key);
+      uploadData.append("timestamp", timestamp);
+      uploadData.append("signature", signature);
+      uploadData.append("folder", "portfolio/designs");
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloud_name}/auto/upload`, {
+        method: "POST",
+        body: uploadData,
       });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error?.message || "Upload failed");
+      }
+
+      const media_type = data.resource_type === "video" ? "video" : "image";
+      
       setFormData((prev) => ({
         ...prev,
-        media_url: res.data.url,
-        media_type: res.data.media_type,
+        media_url: data.secure_url,
+        media_type: media_type,
       }));
       setStatus("Media uploaded successfully!");
       setTimeout(() => setStatus(""), 3000);
