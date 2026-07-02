@@ -3,16 +3,19 @@ import { FiMenu, FiX, FiMoon, FiSun } from "react-icons/fi";
 
 const Navbar = ({ about }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const isDark = document.body.classList.contains("dark");
+  const [isDark, setIsDark] = useState(
+    document.body.classList.contains("dark")
+  );
 
   const toggleTheme = () => {
-    const theme = isDark ? "light" : "dark";
-    if (theme === "dark") {
+    const newIsDark = !isDark;
+    setIsDark(newIsDark);
+    if (newIsDark) {
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
     }
-    localStorage.setItem("theme", theme);
+    localStorage.setItem("theme", newIsDark ? "dark" : "light");
   };
 
   const navLinks = [
