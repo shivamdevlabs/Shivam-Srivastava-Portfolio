@@ -32,7 +32,7 @@ const CategorySkillsList = ({
             className={`p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition cursor-default select-none ${dragProps.className}`}
           >
             <div className="flex items-center gap-3">
-              <div 
+              <div
                 className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-blue-500 pt-0.5 transition"
                 title="Drag to reorder"
               >
@@ -177,11 +177,10 @@ const AdminSkills = () => {
         <div className="flex space-x-2 flex-wrap gap-y-2">
           <button
             onClick={() => setIsFormOpen(false)}
-            className={`px-4 py-2 rounded-lg transition ${
-              isFormOpen && !editingId
+            className={`px-4 py-2 rounded-lg transition ${isFormOpen && !editingId
                 ? "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
                 : "hidden"
-            }`}
+              }`}
           >
             Cancel
           </button>
@@ -211,11 +210,10 @@ const AdminSkills = () => {
 
       {status && (
         <div
-          className={`mb-4 p-4 rounded-lg ${
-            status.includes("Error")
+          className={`mb-4 p-4 rounded-lg ${status.includes("Error")
               ? "bg-red-100 text-red-700"
               : "bg-blue-100 text-blue-700"
-          }`}
+            }`}
         >
           {status}
         </div>
