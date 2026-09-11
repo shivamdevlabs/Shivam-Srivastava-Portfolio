@@ -4,8 +4,16 @@ from datetime import datetime
 
 
 class User(BaseModel):
+    name: Optional[str] = "Admin"
     email: EmailStr
     hashed_password: str
+
+
+class AdminProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
 
 
 class Token(BaseModel):

@@ -10,6 +10,7 @@ import AdminGraphicDesigns from './pages/AdminGraphicDesigns';
 import AdminExperience from './pages/AdminExperience';
 import AdminSkills from './pages/AdminSkills';
 import AdminCertificates from './pages/AdminCertificates';
+import AdminSettings from './pages/AdminSettings';
 import AdminLayout from './components/AdminLayout';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -47,7 +48,7 @@ function App() {
                 <Route path="experience" element={<AdminExperience />} />
                 <Route path="skills" element={<AdminSkills />} />
                 <Route path="certificates" element={<AdminCertificates />} />
-                <Route path="settings" element={<div className="p-4">Settings (Coming Soon)</div>} />
+                <Route path="settings" element={<AdminSettings />} />
               </Route>
             </Route>
           </Routes>
