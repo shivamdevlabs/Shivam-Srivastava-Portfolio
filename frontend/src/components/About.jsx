@@ -5,7 +5,7 @@ const About = ({ about, skills = [] }) => {
 
   const defaultSkills = ['Python', 'Django', 'FastAPI', 'Flask', 'React.js', 'JavaScript', 'Node.js', 'Express.js', 'MongoDB', 'MySQL', 'Tailwind CSS'].map(name => ({ name, category: 'technical' }));
   const activeSkills = skills.length > 0 ? skills : defaultSkills;
-  
+
   const technicalSkills = activeSkills.filter(s => (s.category || 'technical') === 'technical');
   const designingSkills = activeSkills.filter(s => s.category === 'designing');
   const otherSkills = activeSkills.filter(s => s.category === 'other');
@@ -29,7 +29,7 @@ const About = ({ about, skills = [] }) => {
   return (
     <section id="about" className="py-20 px-4">
       <div className="max-w-6xl mx-auto">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -41,7 +41,7 @@ const About = ({ about, skills = [] }) => {
         </motion.div>
 
         <div className="flex flex-col md:flex-row gap-12 items-start">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -50,10 +50,10 @@ const About = ({ about, skills = [] }) => {
           >
             <div className="glass p-8 rounded-3xl shadow-xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-20 -mt-20 transition-transform group-hover:scale-150 duration-700"></div>
-              <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300 relative z-10">
+              <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300 relative z-10 text-justify">
                 {about.bio}
               </p>
-              
+
               <div className="mt-8 relative z-10">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
@@ -66,9 +66,9 @@ const About = ({ about, skills = [] }) => {
                   </div>
                 </div>
                 <div className="mt-10 flex justify-center">
-                  <a 
-                    href={`https://wa.me/${about.phone ? about.phone.replace(/[^0-9]/g, '') : ''}`} 
-                    target="_blank" 
+                  <a
+                    href={`https://wa.me/${about.phone ? about.phone.replace(/[^0-9]/g, '') : ''}`}
+                    target="_blank"
                     rel="noreferrer"
                     className="px-10 py-3 rounded-full bg-green-600 text-white font-medium hover:bg-green-700 transition shadow-lg shadow-green-500/30 flex items-center gap-2"
                   >
@@ -78,8 +78,8 @@ const About = ({ about, skills = [] }) => {
               </div>
             </div>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
