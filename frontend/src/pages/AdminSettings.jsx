@@ -105,6 +105,7 @@ const AdminSettings = () => {
       setOriginalEmail(profile.email.trim().toLowerCase());
       setCurrentPasswordForEmail('');
       showStatus('success', 'Admin profile updated successfully!');
+      window.dispatchEvent(new Event('admin-profile-updated'));
     } catch (err) {
       console.error('Profile update failed:', err);
       showStatus(
