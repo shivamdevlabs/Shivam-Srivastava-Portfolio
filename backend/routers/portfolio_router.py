@@ -1,28 +1,41 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from typing import List
 from bson import ObjectId
-from models import Project, Certificate, Experience, Education, AboutInfo
-from auth import get_current_admin
-from database import get_db
-import shutil
 import os
-import uuid
 import smtplib
 from email.message import EmailMessage
-from models import (
-    Project,
-    Certificate,
-    Experience,
-    Education,
-    AboutInfo,
-    ContactMessage,
-    GraphicDesign,
-)
+import time
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 import cloudinary.utils
-import time
+
+try:
+    from auth import get_current_admin
+    from database import get_db
+    from models import (
+        Project,
+        Certificate,
+        Experience,
+        Education,
+        AboutInfo,
+        ContactMessage,
+        GraphicDesign,
+        Skill,
+    )
+except ImportError:
+    from backend.auth import get_current_admin
+    from backend.database import get_db
+    from backend.models import (
+        Project,
+        Certificate,
+        Experience,
+        Education,
+        AboutInfo,
+        ContactMessage,
+        GraphicDesign,
+        Skill,
+    )
 
 router = APIRouter(prefix="/api/portfolio", tags=["portfolio"])
 
@@ -144,10 +157,6 @@ async def delete_project(id: str):
         raise HTTPException(status_code=404, detail="Project not found")
     return {"msg": "Deleted"}
 
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Project not found")
-    return {"msg": "Deleted"}
-
 
 # Certificates Endpoints
 @router.get("/certificates")
@@ -199,6 +208,26 @@ async def add_experience(exp: Experience):
     return {"id": str(result.inserted_id)}
 
 
+@router.put("/experience/{id}", dependencies=[Depends(get_current_admin)])
+async def update_experience(id: str, exp: Experience):
+    db = get_db()
+    result = await db["experience"].update_one(
+        {"_id": ObjectId(id)}, {"$set": exp.dict()}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Experience not found")
+    return {"msg": "Experience updated"}
+
+
+@router.delete("/experience/{id}", dependencies=[Depends(get_current_admin)])
+async def delete_experience(id: str):
+    db = get_db()
+    result = await db["experience"].delete_one({"_id": ObjectId(id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Experience not found")
+    return {"msg": "Experience deleted"}
+
+
 # Education Endpoints
 @router.get("/education")
 async def get_education():
@@ -212,6 +241,26 @@ async def add_education(edu: Education):
     db = get_db()
     result = await db["education"].insert_one(edu.dict())
     return {"id": str(result.inserted_id)}
+
+
+@router.put("/education/{id}", dependencies=[Depends(get_current_admin)])
+async def update_education(id: str, edu: Education):
+    db = get_db()
+    result = await db["education"].update_one(
+        {"_id": ObjectId(id)}, {"$set": edu.dict()}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Education not found")
+    return {"msg": "Education updated"}
+
+
+@router.delete("/education/{id}", dependencies=[Depends(get_current_admin)])
+async def delete_education(id: str):
+    db = get_db()
+    result = await db["education"].delete_one({"_id": ObjectId(id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Education not found")
+    return {"msg": "Education deleted"}
 
 
 # About Endpoints
@@ -305,8 +354,6 @@ async def delete_graphic_design(design_id: str):
 
 
 # Skills Endpoints
-
-from models import Skill
 
 
 @router.get("/skills")
