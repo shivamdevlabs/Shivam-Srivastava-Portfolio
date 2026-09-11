@@ -1,13 +1,79 @@
 import { useState, useEffect } from "react";
 import api from "../services/api";
 import { FiTrash2, FiPlus, FiEdit2 } from "react-icons/fi";
+import { MdDragIndicator } from "react-icons/md";
+import { useDragAndDrop } from "../hooks/useDragAndDrop";
+
+const CategorySkillsList = ({
+  category,
+  categorySkills,
+  onReorderCategory,
+  onEdit,
+  onDelete,
+}) => {
+  const [items, setItems] = useState(categorySkills);
+
+  useEffect(() => {
+    setItems(categorySkills);
+  }, [categorySkills]);
+
+  const { getItemProps } = useDragAndDrop(items, setItems, (newItems) => {
+    onReorderCategory(category, newItems);
+  });
+
+  return (
+    <ul className="divide-y divide-gray-100 dark:divide-gray-700">
+      {items.map((skill, index) => {
+        const dragProps = getItemProps(index);
+        return (
+          <li
+            key={skill.id}
+            {...dragProps}
+            className={`p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition cursor-default select-none ${dragProps.className}`}
+          >
+            <div className="flex items-center gap-3">
+              <div 
+                className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-blue-500 pt-0.5 transition"
+                title="Drag to reorder"
+              >
+                <MdDragIndicator size={22} />
+              </div>
+              <span className="font-medium text-lg">{skill.name}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => onEdit(skill)}
+                className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition"
+                title="Edit Skill"
+              >
+                <FiEdit2 size={20} />
+              </button>
+              <button
+                onClick={() => onDelete(skill.id)}
+                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
+                title="Delete Skill"
+              >
+                <FiTrash2 size={20} />
+              </button>
+            </div>
+          </li>
+        );
+      })}
+      {items.length === 0 && (
+        <li className="p-8 text-center text-gray-500 italic">
+          No skills found in this category.
+        </li>
+      )}
+    </ul>
+  );
+};
 
 const AdminSkills = () => {
   const [skills, setSkills] = useState([]);
   const [status, setStatus] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  
+
   const [formData, setFormData] = useState({ name: "", category: "technical" });
 
   useEffect(() => {
@@ -23,6 +89,30 @@ const AdminSkills = () => {
     }
   };
 
+  const handleCategoryReorder = async (category, reorderedCategorySkills) => {
+    let categoryIdx = 0;
+    const updatedAll = skills.map((item) => {
+      if ((item.category || "technical") === category) {
+        return reorderedCategorySkills[categoryIdx++];
+      }
+      return item;
+    });
+
+    setSkills(updatedAll);
+
+    try {
+      setStatus("Saving skills order...");
+      await api.put("/portfolio/skills/reorder", {
+        ids: updatedAll.map((s) => s.id),
+      });
+      setStatus("Skills order updated successfully!");
+      setTimeout(() => setStatus(""), 2500);
+    } catch (err) {
+      console.error("Failed to save skills order:", err);
+      setStatus("Error saving skills order.");
+    }
+  };
+
   const handleAddNewClick = (category = "technical") => {
     setEditingId(null);
     setFormData({ name: "", category });
@@ -33,7 +123,7 @@ const AdminSkills = () => {
     setEditingId(skill.id);
     setFormData({ name: skill.name, category: skill.category || "technical" });
     setIsFormOpen(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDelete = async (id) => {
@@ -52,10 +142,10 @@ const AdminSkills = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
-    
+
     try {
       setStatus(editingId ? "Updating skill..." : "Adding skill...");
-      
+
       if (editingId) {
         await api.put(`/portfolio/skills/${editingId}`, formData);
         setStatus("Skill updated successfully!");
@@ -78,30 +168,39 @@ const AdminSkills = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Manage Skills</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Manage Skills</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1">
+            <MdDragIndicator className="inline text-blue-500" /> Drag and drop skills to reorder them in each category
+          </p>
+        </div>
         <div className="flex space-x-2 flex-wrap gap-y-2">
           <button
             onClick={() => setIsFormOpen(false)}
-            className={`px-4 py-2 rounded-lg transition ${isFormOpen && !editingId ? "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200" : "hidden"}`}
+            className={`px-4 py-2 rounded-lg transition ${
+              isFormOpen && !editingId
+                ? "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+                : "hidden"
+            }`}
           >
             Cancel
           </button>
           <button
-            onClick={() => handleAddNewClick('technical')}
+            onClick={() => handleAddNewClick("technical")}
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
           >
             <FiPlus />
             <span>Add Technical Skill</span>
           </button>
           <button
-            onClick={() => handleAddNewClick('designing')}
+            onClick={() => handleAddNewClick("designing")}
             className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
           >
             <FiPlus />
             <span>Add Designing Skill</span>
           </button>
           <button
-            onClick={() => handleAddNewClick('other')}
+            onClick={() => handleAddNewClick("other")}
             className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
           >
             <FiPlus />
@@ -112,7 +211,11 @@ const AdminSkills = () => {
 
       {status && (
         <div
-          className={`mb-4 p-4 rounded-lg ${status.includes("Error") ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"}`}
+          className={`mb-4 p-4 rounded-lg ${
+            status.includes("Error")
+              ? "bg-red-100 text-red-700"
+              : "bg-blue-100 text-blue-700"
+          }`}
         >
           {status}
         </div>
@@ -125,11 +228,11 @@ const AdminSkills = () => {
         >
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">
-              {editingId ? 'Edit Skill' : 'Add New Skill'}
+              {editingId ? "Edit Skill" : "Add New Skill"}
             </h2>
             {editingId && (
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setIsFormOpen(false)}
                 className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
               >
@@ -139,11 +242,15 @@ const AdminSkills = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Skill Name (e.g. Python, React.js)</label>
+            <label className="block text-sm font-medium mb-1">
+              Skill Name (e.g. Python, React.js)
+            </label>
             <input
               name="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               required
               className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -154,7 +261,9 @@ const AdminSkills = () => {
             <select
               name="category"
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, category: e.target.value })
+              }
               className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="technical">Technical Skill</option>
@@ -162,7 +271,7 @@ const AdminSkills = () => {
               <option value="other">Other Skill</option>
             </select>
           </div>
-          
+
           <button
             type="submit"
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
@@ -173,41 +282,26 @@ const AdminSkills = () => {
       )}
 
       {["technical", "designing", "other"].map((category) => {
-        const categorySkills = skills.filter((s) => (s.category || "technical") === category);
-        const titles = { technical: "Technical Skills", designing: "Designing Skills", other: "Other Skills" };
-        
+        const categorySkills = skills.filter(
+          (s) => (s.category || "technical") === category
+        );
+        const titles = {
+          technical: "Technical Skills",
+          designing: "Designing Skills",
+          other: "Other Skills",
+        };
+
         return (
           <div key={category} className="mb-8">
             <h2 className="text-xl font-bold mb-4">{titles[category]}</h2>
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
-              <ul className="divide-y divide-gray-100 dark:divide-gray-700">
-                {categorySkills.map((skill) => (
-                  <li key={skill.id} className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-                    <span className="font-medium text-lg">{skill.name}</span>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => handleEditClick(skill)}
-                        className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition"
-                        title="Edit Skill"
-                      >
-                        <FiEdit2 size={20} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(skill.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
-                        title="Delete Skill"
-                      >
-                        <FiTrash2 size={20} />
-                      </button>
-                    </div>
-                  </li>
-                ))}
-                {categorySkills.length === 0 && (
-                  <li className="p-8 text-center text-gray-500 italic">
-                    No skills found in this category.
-                  </li>
-                )}
-              </ul>
+              <CategorySkillsList
+                category={category}
+                categorySkills={categorySkills}
+                onReorderCategory={handleCategoryReorder}
+                onEdit={handleEditClick}
+                onDelete={handleDelete}
+              />
             </div>
           </div>
         );

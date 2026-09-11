@@ -24,6 +24,7 @@ class Project(BaseModel):
     github_link: Optional[str] = None
     live_demo: Optional[str] = None
     image_url: Optional[str] = None
+    order: Optional[int] = 0
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -31,6 +32,7 @@ class Certificate(BaseModel):
     title: str
     pdf_url: str
     issued_by: Optional[str] = None
+    order: Optional[int] = 0
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -41,12 +43,14 @@ class Experience(BaseModel):
     start_date: str
     end_date: str
     description: List[str]
+    order: Optional[int] = 0
 
 
 class Education(BaseModel):
     degree: str
     institution: str
     duration: str
+    order: Optional[int] = 0
 
 
 class AboutInfo(BaseModel):
@@ -72,9 +76,11 @@ class GraphicDesign(BaseModel):
     description: str
     media_url: str
     media_type: str  # 'image' or 'video'
+    order: Optional[int] = 0
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class Skill(BaseModel):
     name: str
     category: str = "technical"  # 'technical', 'designing', or 'other'
+    order: Optional[int] = 0

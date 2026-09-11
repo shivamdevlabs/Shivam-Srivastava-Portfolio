@@ -37,7 +37,40 @@ except ImportError:
         Skill,
     )
 
+from pydantic import BaseModel
+from pymongo import UpdateOne
+
 router = APIRouter(prefix="/api/portfolio", tags=["portfolio"])
+
+
+class ReorderRequest(BaseModel):
+    ids: List[str]
+
+
+@router.put("/{section}/reorder", dependencies=[Depends(get_current_admin)])
+@router.put("/reorder/{section}", dependencies=[Depends(get_current_admin)])
+async def reorder_items(section: str, payload: ReorderRequest):
+    collection_map = {
+        "experience": "experience",
+        "projects": "projects",
+        "certificates": "certificates",
+        "graphic-designs": "graphic_designs",
+        "skills": "skills",
+        "education": "education",
+    }
+    col_name = collection_map.get(section)
+    if not col_name:
+        raise HTTPException(status_code=400, detail=f"Invalid section: {section}")
+
+    db = get_db()
+    operations = [
+        UpdateOne({"_id": ObjectId(item_id)}, {"$set": {"order": idx}})
+        for idx, item_id in enumerate(payload.ids)
+        if ObjectId.is_valid(item_id)
+    ]
+    if operations:
+        await db[col_name].bulk_write(operations)
+    return {"msg": f"{section.capitalize()} order updated successfully"}
 
 
 # Helper function to convert ObjectId to string
@@ -127,7 +160,7 @@ async def get_upload_signature(folder: str = "portfolio/designs"):
 @router.get("/projects")
 async def get_projects():
     db = get_db()
-    projects = await db["projects"].find().to_list(100)
+    projects = await db["projects"].find().sort([("order", 1), ("_id", 1)]).to_list(100)
     return [serialize_doc(p) for p in projects]
 
 
@@ -162,7 +195,7 @@ async def delete_project(id: str):
 @router.get("/certificates")
 async def get_certificates():
     db = get_db()
-    certificates = await db["certificates"].find().to_list(100)
+    certificates = await db["certificates"].find().sort([("order", 1), ("_id", 1)]).to_list(100)
     return [serialize_doc(c) for c in certificates]
 
 
@@ -197,7 +230,7 @@ async def update_certificate(id: str, certificate: Certificate):
 @router.get("/experience")
 async def get_experience():
     db = get_db()
-    experience = await db["experience"].find().to_list(100)
+    experience = await db["experience"].find().sort([("order", 1), ("_id", 1)]).to_list(100)
     return [serialize_doc(e) for e in experience]
 
 
@@ -232,7 +265,7 @@ async def delete_experience(id: str):
 @router.get("/education")
 async def get_education():
     db = get_db()
-    education = await db["education"].find().to_list(100)
+    education = await db["education"].find().sort([("order", 1), ("_id", 1)]).to_list(100)
     return [serialize_doc(e) for e in education]
 
 
@@ -317,7 +350,7 @@ async def send_contact_email(msg: ContactMessage):
 @router.get("/graphic-designs")
 async def get_graphic_designs():
     db = get_db()
-    designs = await db["graphic_designs"].find().sort("created_at", -1).to_list(100)
+    designs = await db["graphic_designs"].find().sort([("order", 1), ("created_at", -1)]).to_list(100)
     return [serialize_doc(d) for d in designs]
 
 
@@ -359,7 +392,7 @@ async def delete_graphic_design(design_id: str):
 @router.get("/skills")
 async def get_skills():
     db = get_db()
-    skills = await db["skills"].find().to_list(100)
+    skills = await db["skills"].find().sort([("order", 1), ("_id", 1)]).to_list(100)
     return [serialize_doc(s) for s in skills]
 
 

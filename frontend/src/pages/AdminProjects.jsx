@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { FiTrash2, FiPlus, FiEdit2 } from 'react-icons/fi';
+import { MdDragIndicator } from 'react-icons/md';
+import { useDragAndDrop } from '../hooks/useDragAndDrop';
 
 const AdminProjects = () => {
   const [projects, setProjects] = useState([]);
@@ -32,6 +34,22 @@ const AdminProjects = () => {
       console.error(err);
     }
   };
+
+  const handleReorder = async (reorderedList) => {
+    try {
+      setStatus('Saving order...');
+      await api.put('/portfolio/projects/reorder', {
+        ids: reorderedList.map(item => item.id)
+      });
+      setStatus('Order updated successfully!');
+      setTimeout(() => setStatus(''), 2500);
+    } catch (err) {
+      console.error('Failed to save order:', err);
+      setStatus('Error saving new order.');
+    }
+  };
+
+  const { getItemProps } = useDragAndDrop(projects, setProjects, handleReorder);
 
   const handleGithubImport = async () => {
     if (!importGithubUrl) return;
@@ -174,7 +192,12 @@ const AdminProjects = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Manage Projects</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Manage Projects</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1">
+            <MdDragIndicator className="inline text-blue-500" /> Drag and drop cards up or down to reorder them
+          </p>
+        </div>
         <button 
           onClick={handleAddNewClick}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
@@ -267,46 +290,59 @@ const AdminProjects = () => {
       )}
 
       <div className="grid gap-4">
-        {projects.map(project => (
-          <div key={project.id} className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm flex justify-between items-start">
-            <div className="flex gap-4 items-start">
-              {project.image_url ? (
-                <img src={project.image_url?.startsWith('http') ? project.image_url : `http://localhost:8000${project.image_url}`} alt={project.title} className="w-20 h-20 object-cover rounded-lg shadow-sm hidden sm:block" />
-              ) : (
-                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center hidden sm:flex text-gray-400 text-xs text-center p-2">
-                  No Image
+        {projects.map((project, index) => {
+          const dragProps = getItemProps(index);
+          return (
+            <div 
+              key={project.id} 
+              {...dragProps}
+              className={`bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm flex justify-between items-start gap-3 cursor-default select-none ${dragProps.className}`}
+            >
+              <div className="flex gap-3 items-start flex-1">
+                <div 
+                  className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-blue-500 pt-1 shrink-0 transition"
+                  title="Drag to reorder"
+                >
+                  <MdDragIndicator size={24} />
                 </div>
-              )}
-              <div>
-                <h3 className="text-xl font-bold">{project.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 mt-1">{project.description}</p>
-                <div className="flex gap-2 mt-3 flex-wrap">
-                  {project.technologies.map((tech, i) => (
-                    <span key={i} className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md">
-                      {tech}
-                    </span>
-                  ))}
+                {project.image_url ? (
+                  <img src={project.image_url?.startsWith('http') ? project.image_url : `http://localhost:8000${project.image_url}`} alt={project.title} className="w-20 h-20 object-cover rounded-lg shadow-sm hidden sm:block" />
+                ) : (
+                  <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center hidden sm:flex text-gray-400 text-xs text-center p-2">
+                    No Image
+                  </div>
+                )}
+                <div>
+                  <h3 className="text-xl font-bold">{project.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mt-1">{project.description}</p>
+                  <div className="flex gap-2 mt-3 flex-wrap">
+                    {project.technologies.map((tech, i) => (
+                      <span key={i} className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-md">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
+              <div className="flex items-center space-x-2 shrink-0">
+                <button 
+                  onClick={() => handleEditClick(project)}
+                  className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition"
+                  title="Edit Project"
+                >
+                  <FiEdit2 size={20} />
+                </button>
+                <button 
+                  onClick={() => handleDelete(project.id)}
+                  className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
+                  title="Delete Project"
+                >
+                  <FiTrash2 size={20} />
+                </button>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <button 
-                onClick={() => handleEditClick(project)}
-                className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition"
-                title="Edit Project"
-              >
-                <FiEdit2 size={20} />
-              </button>
-              <button 
-                onClick={() => handleDelete(project.id)}
-                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
-                title="Delete Project"
-              >
-                <FiTrash2 size={20} />
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
         {projects.length === 0 && (
           <p className="text-gray-500 italic">No projects found. Add one above!</p>
         )}
