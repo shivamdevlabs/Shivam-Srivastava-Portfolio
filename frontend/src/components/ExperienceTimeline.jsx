@@ -7,7 +7,7 @@ const ExperienceTimeline = ({ experience, education }) => {
   return (
     <section id="experience" className="py-20 px-4">
       <div className="max-w-4xl mx-auto">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -19,9 +19,9 @@ const ExperienceTimeline = ({ experience, education }) => {
         </motion.div>
 
         <div className="space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-300 dark:before:via-gray-700 before:to-transparent">
-          
+
           {experience.map((exp, index) => (
-            <motion.div 
+            <motion.div
               key={`exp-${index}`}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -40,7 +40,7 @@ const ExperienceTimeline = ({ experience, education }) => {
                   </span>
                 </div>
                 <div className="text-gray-700 dark:text-gray-300 font-medium mb-4">{exp.company} • {exp.location}</div>
-                <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 text-sm space-y-1">
+                <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 text-sm space-y-1 text-justify">
                   {exp.description.map((desc, i) => (
                     <li key={i} className="leading-relaxed">{desc}</li>
                   ))}
@@ -50,7 +50,7 @@ const ExperienceTimeline = ({ experience, education }) => {
           ))}
 
           {education.map((edu, index) => (
-            <motion.div 
+            <motion.div
               key={`edu-${index}`}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}

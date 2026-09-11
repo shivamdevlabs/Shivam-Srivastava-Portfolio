@@ -314,19 +314,25 @@ async def update_about(about: AboutInfo):
 # Contact Endpoint
 @router.post("/contact")
 async def send_contact_email(msg: ContactMessage):
+    # Save message to MongoDB
+    try:
+        db = get_db()
+        msg_dict = msg.dict()
+        msg_dict["created_at"] = time.time()
+        await db["contact_messages"].insert_one(msg_dict)
+    except Exception as e:
+        print(f"Error saving message to DB: {e}")
+
     smtp_email = os.getenv("SMTP_EMAIL")
     smtp_password = os.getenv("SMTP_PASSWORD")
 
     if not smtp_email or not smtp_password:
-        print(
-            f"Warning: SMTP credentials not set. Simulated email from {msg.name} ({msg.email}): {msg.message}"
-        )
-        return {"msg": "Message sent (simulated)"}
+        return {"msg": "Message received and recorded successfully"}
 
     try:
         email = EmailMessage()
         email.set_content(
-            f"Name: {msg.name}\nEmail: {msg.email}\n\nMessage:\n{msg.message}"
+            f"Name: {msg.name}\nMobile: {msg.phone or 'Not provided'}\nEmail: {msg.email}\n\nMessage:\n{msg.message}"
         )
         email["Subject"] = f"New Portfolio Contact from {msg.name}"
         email["From"] = smtp_email
@@ -336,12 +342,10 @@ async def send_contact_email(msg: ContactMessage):
         server.login(smtp_email, smtp_password)
         server.send_message(email)
         server.quit()
-        return {"msg": "Message sent successfully"}
     except Exception as e:
         print(f"SMTP Error: {e}")
-        raise HTTPException(
-            status_code=500, detail="Failed to send email. Please try again later."
-        )
+
+    return {"msg": "Message received successfully"}
 
 
 # Graphic Design Endpoints

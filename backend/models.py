@@ -76,6 +76,7 @@ class AboutInfo(BaseModel):
 class ContactMessage(BaseModel):
     name: str
     email: EmailStr
+    phone: Optional[str] = None
     message: str
 
 
